@@ -1,0 +1,22 @@
+@startuml
+hide footbox
+skinparam actorStyle awesome
+skinparam BoxPadding 10
+skinparam maxMessageSize 200
+skinparam DefaultTextAlignment center
+skinparam sequenceMessageAlign direction
+
+title Diagrama de Sequência
+
+actor "Estudante" AS Estudante
+participant "PortalReserva" AS PortalReserva
+participant "Sala" AS Sala
+
+Estudante -> PortalReserva: LocalizarSala(idSala)
+PortalReserva -> Sala: PegarDados(idSala)
+Sala --> PortalReserva: nome, capacidade, localização
+PortalReserva --> Estudante: informa os dados
+
+
+
+@enduml

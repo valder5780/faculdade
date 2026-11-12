@@ -1,0 +1,79 @@
+@startuml
+hide footbox
+skinparam actorStyle awesome
+skinparam BoxPadding 10
+skinparam maxMessageSize 200
+skinparam DefaultTextAlignment center
+skinparam sequenceMessageAlign direction
+
+title Diagrama de Sequência
+
+actor "Estudante" AS Estudante
+participant "PortalReserva" AS PortalReserva
+participant "ServicoReserva" AS ServicoReserva
+participant "Reserva" AS Reserva
+participant "Sala" AS Sala
+participant "ListaEspera" AS ListaEspera
+participant "Notificador" AS Notificador
+
+Estudante -> PortalReserva: DesfazerReserva(idReserva)
+PortalReserva -> ServicoReserva: SolicitarCancelarReserva(idReserva, idEstudante)
+ServicoReserva -> Reserva: ChecarReservista(idReserva, idEstudante)
+
+alt reserva pertence ao estudante
+ServicoReserva -> Reserva: ChecagemDeReservaAtiva(idReserva)
+
+alt reserva ainda estava ativa
+Reserva --> ServicoReserva: ChecagemDeReservaAtiva(): true
+ServicoReserva -> Reserva: CancelarReserva(idReserva)
+Reserva --> ServicoReserva: CancelarReserva(): true
+ServicoReserva -> Sala: LiberarHorario(idReserva)
+Sala -> ServicoReserva: LiberarHorario(): true, idSala
+
+
+ServicoReserva -> ListaEspera: EstudantesNaLista(idSala)
+
+alt tem estudantes na lista de espera
+ListaEspera  --> ServicoReserva: EstudantesNaLista(): true
+
+loop 
+ServicoReserva -> Notificador: EnviarNotificacao(idEstudante, "horario Liberado")
+Notificador -> ServicoReserva: EnviarNotificacao(): true
+end
+
+opt estudante solicitou comprovante do cancelamento
+ServicoReserva -> Notificador: EnviarComprovCancelamento(idEstudante)
+Notificador -> ServicoReserva: EnviarNotificacao(): true
+
+end
+
+
+
+ServicoReserva --> PortalReserva: SolicitarCancelarReserva(): true
+PortalReserva --> Estudante: avisa que a reserva foi cancelada
+
+else nao tem estudantes na lista de espera
+ListaEspera  --> ServicoReserva: EstudantesNaLista(): false
+
+end
+
+
+else reserva não estava mais ativa
+Reserva --> ServicoReserva: ChecagemDeReservaAtiva(): false
+ServicoReserva --> PortalReserva: SolicitarCancelarReserva(): false
+PortalReserva --> Estudante: informa que a reserva não esta mais ativa
+
+end
+
+
+else reserva não pertence ao estudante
+
+Reserva --> ServicoReserva: ChecarReservista(): false
+ServicoReserva --> PortalReserva: CancelarReserva(): false
+PortalReserva --> Estudante:  informa o estudante que ele não tem permissão para cancelar a reserva
+
+end
+
+
+
+@enduml

@@ -1,0 +1,38 @@
+@startuml
+hide footbox
+skinparam actorStyle awesome
+skinparam BoxPadding 10
+skinparam maxMessageSize 200
+skinparam DefaultTextAlignment center
+skinparam sequenceMessageAlign direction
+
+title Diagrama de Sequência
+
+actor "Estudante" AS Estudante
+participant "PortalReserva" AS PortalReserva
+participant "ServicoReserva" AS ServicoReserva
+participant "Sala" AS Sala
+
+Estudante -> PortalReserva: ReservarSala(idSala, data, horario)
+PortalReserva -> ServicoReserva: FazerReserva(idSala, data, horario, estudante)
+ServicoReserva -> Sala: ChecarDisponibilidade(idSala, data, horario)
+
+alt Sala esta disponivel
+Sala --> ServicoReserva: ChecarDisponibilidade():true
+ServicoReserva -> Sala: RegistarReserva(idSala, data, horario)
+Sala --> ServicoReserva: RegistarReserva(): iDReserva
+ServicoReserva --> PortalReserva: FazerReserva():true
+PortalReserva --> Estudante: informa que a reserva foi feita com sucesso
+
+else Sala não esta disponivel
+Sala --> ServicoReserva: ChecarDisponibilidade():false
+ServicoReserva --> PortalReserva: FazerReserva():false
+PortalReserva --> Estudante: infroma que a reserva não pode ser feita
+
+end
+
+
+
+
+
+@enduml
