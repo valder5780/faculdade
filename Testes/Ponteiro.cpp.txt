@@ -1,0 +1,30 @@
+#include <stdio.h>
+
+int PonteiroTipo(void *dado)
+{
+	bool *a = (bool*) dado;
+	int *b = (int*) dado;
+	float *c = (float*) dado;
+	double *d = (double*) dado;
+	char *e = (char*) dado;
+	
+	printf("%b, %d, %f, %c", *a, *b, *c, *e);
+	
+}
+
+int main()
+{
+	int *a;
+	
+	for(int i = 0; i < 100; i++)
+	{
+		printf("\nmemoria %d: %p ->", i, a + i);
+		PonteiroTipo(a);
+	}
+	
+	return 0;
+}
+
+
+
+
